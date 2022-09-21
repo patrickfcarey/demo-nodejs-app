@@ -49,7 +49,7 @@ pipeline {
      steps{
             withAWS(credentials: registryCredential, region: "${AWS_DEFAULT_REGION}") {
                 script {
-			sudo sh './script.sh'
+			sudo './script.sh'
                 }
             } 
         }
