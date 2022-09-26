@@ -1,26 +1,30 @@
 pipeline {
     agent any
+    //ALL OF THE FOLLOW VARIABLES ARE TO BE CHANGED EXCEPT FOR THESE 3:
+    //TASK_DEFINITION_NAME
+    //IMAGE_TAG
+    //REPOSITORY_URI
     environment {
         AWS_ACCOUNT_ID="974865759141"
         AWS_DEFAULT_REGION="us-west-2" 
-	CLUSTER_NAME="default"
-	SERVICE_NAME="nodejs-container-service"
-	TASK_DEFINITION_NAME="first-run-task-definition"
-	DESIRED_COUNT="1"
+        CLUSTER_NAME="default"
+        SERVICE_NAME="nodejs-container-service"
+        TASK_DEFINITION_NAME="first-run-task-definition"
+        DESIRED_COUNT="1"
         IMAGE_REPO_NAME="demo-nodejs-repo"
         IMAGE_TAG="${env.BUILD_ID}"
         REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-	registryCredential = "demo-admin-user"
+        registryCredential = "demo-admin-user"
     }
-   
+    
     stages {
-
+    
     // Tests
     stage('Unit Tests') {
       steps{
         script {
           sh 'npm install'
-	  sh 'npm test -- --watchAll=false'
+          sh 'npm test -- --watchAll=false'
         }
       }
     }
@@ -33,28 +37,27 @@ pipeline {
         }
       }
     }
-   
+    
     // Uploading Docker images into AWS ECR
     stage('Pushing to ECR') {
-     steps{  
-         script {
-			docker.withRegistry("https://" + REPOSITORY_URI, "ecr:${AWS_DEFAULT_REGION}:" + registryCredential) {
-                    	dockerImage.push()
-                	}
-         }
+      steps{  
+          script {
+            docker.withRegistry("https://" + REPOSITORY_URI, "ecr:${AWS_DEFAULT_REGION}:" + registryCredential) {
+              dockerImage.push()
+            }
+          }
         }
       }
       
     stage('Deploy') {
-     steps{
-            withAWS(credentials: registryCredential, region: "${AWS_DEFAULT_REGION}") {
-                script {
-			sh './script.sh'
-                }
-            } 
+      steps{
+          withAWS(credentials: registryCredential, region: "${AWS_DEFAULT_REGION}") {
+            script {
+              sh './script.sh'
+            }
+          } 
         }
       }      
-      
     }
 }
 
