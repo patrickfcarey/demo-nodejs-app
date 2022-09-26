@@ -36,5 +36,4 @@ Aplication will be deployed in AWS ECS.
 
 
 ## Notes
-adding another adding test note
-test
+
