@@ -9,7 +9,7 @@ CI/CD to test, build, push and deploy the NodeJS Dokerized app to AWS ECS using 
 
 1. Github
 
-This contains our sample nodes application code.
+This contains our sample node application code.
 
 2. Jenkins
 
